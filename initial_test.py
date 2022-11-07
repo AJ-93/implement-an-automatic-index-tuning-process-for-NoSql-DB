@@ -4,4 +4,9 @@ conn = MongoClient("mongodb+srv://ajaykumarchadayan:Intelcoreiat3@cluster0.px5g5
 
 database = conn.get_database('sample_mflix')
 
-print(database)
+
+result = database.comments.find({})
+
+query_result = database.comments.find({}).explain()
+
+print(query_result['executionStats'])
