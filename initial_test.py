@@ -2,33 +2,243 @@ from pymongo import MongoClient
 import requests
 from requests.auth import HTTPDigestAuth
 
-conn = MongoClient("mongodb+srv://ajaykumarchadayan:Intelcoreiat3@cluster0.px5g5ok.mongodb.net/?retryWrites=true&w=majority")
+conn = MongoClient("mongodb://localhost:27017")
 
-database = conn.get_database('sample_mflix')
+database = conn.get_database('movies')
 
+database.metadata.insert_many(
+    [
+        {"title": "The Shawshank Redemption", "directedBy": "Frank Darabont", "starring": "Morgan Freeman",
+         "dateAdded": "14 Oct 1994", "avgRating": "9.2", "imdbId": "tt0111161", "item_id": "2"},
+        {"title": "The Godfather", "directedBy": "Francis Ford Coppola", "starring": "Marlon Brando",
+         "dateAdded": "24 Mar 1972", "avgRating": "9.2", "imdbId": "tt0068646", "item_id": "4"},
+        {"title": "The Dark Knight", "directedBy": "Christopher Nolan", "starring": "Christopher Nolan",
+         "dateAdded": "18 Jul 2008", "avgRating": "9.1", "imdbId": "tt0468569", "item_id": "2"},
+        {"title": "The Godfather: Part II", "directedBy": "Francis Ford Coppola", "starring": "Al Pacino",
+         "dateAdded": "18 Dec 1974", "avgRating": "9.0", "imdbId": "tt0071562", "item_id": "2"},
+        {"title": "12 Angry Men", "directedBy": "Sidney Lumet", "starring": "Lee J. Cobb", "dateAdded": "10 Apr 1957",
+         "avgRating": "9.2", "imdbId": "tt0050083", "item_id": "2"},
+        {"title": "Schindler's List", "directedBy": "Steven Spielberg", "starring": "Steven Zaillian",
+         "dateAdded": "04 Feb 1994", "avgRating": "8.9", "imdbId": "tt0108052", "item_id": "2"},
+        {"title": "The Lord of the Rings: The Return of the King", "directedBy": "Peter Jackson",
+         "starring": "Fran Walsh", "dateAdded": "17 Dec 2003", "avgRating": "9.0", "imdbId": "tt0167260",
+         "item_id": "2"},
+        {"title": "Pulp Fiction", "directedBy": "Quentin Tarantino", "starring": "John Travolta",
+         "dateAdded": "14 Oct 1994", "avgRating": "8.9", "imdbId": "tt0110912", "item_id": "2"},
+        {"title": "The Lord of the Rings: The Fellowship of the Ring", "directedBy": "Peter Jackson",
+         "starring": "Fran Walsh", "dateAdded": "19 Dec 2001", "avgRating": "8.8", "imdbId": "tt0120737",
+         "item_id": "2"},
+        {"title": "The Good the Bad and the Ugly", "directedBy": "Sergio Leone", "starring": "Sergio Leone",
+         "dateAdded": "29 Dec 1967", "avgRating": "8.8", "imdbId": "tt0060196", "item_id": "2"},
+        {"title": "Forrest Gump", "directedBy": "Robert Zemeckis", "starring": "Tom Hanks", "dateAdded": "06 Jul 1994",
+         "avgRating": "8.8", "imdbId": "tt0109830", "item_id": "2"},
+        {"title": "Fight Club", "directedBy": "David Fincher", "starring": "Edward Norton", "dateAdded": "15 Oct 1999",
+         "avgRating": "9.2", "imdbId": "tt0137523", "item_id": "2"},
+        {"title": "Inception", "directedBy": "Christopher Nolan", "starring": "Leonardo DiCaprio",
+         "dateAdded": "16 Jul 2010", "avgRating": "9.2", "imdbId": "tt1375666", "item_id": "2"},
+        {"title": "The Lord of the Rings: The Two Towers", "directedBy": "Peter Jackson", "starring": "Fran Walsh",
+         "dateAdded": "18 Dec 2002", "avgRating": "8.7", "imdbId": "tt0167261", "item_id": "2"},
+        {"title": "Star Wars: Episode V - The Empire Strikes Back", "directedBy": "Irvin Kershner",
+         "starring": "Lawrence Kasdan", "dateAdded": "20 Jun 1980", "avgRating": "8.7", "imdbId": "tt0080684",
+         "item_id": "2"},
+        {"title": "The Matrix", "directedBy": "Lana Wachowski", "starring": "Lana Wachowski",
+         "dateAdded": "31 Mar 1999", "avgRating": "8.7", "imdbId": "tt0133093", "item_id": "2"},
+        {"title": "Goodfellas", "directedBy": "Martin Scorsese", "starring": "Martin Scorsese",
+         "dateAdded": "21 Sep 1990", "avgRating": "8.7", "imdbId": "tt0099685", "item_id": "2"},
+        {"title": "One Flew Over the Cuckoo's Nest", "directedBy": "Milos Forman", "starring": "Jack Nicholson",
+         "dateAdded": "19 Nov 1975", "avgRating": "9.2", "imdbId": "tt0073486", "item_id": "2"},
+        {"title": "Se7en", "directedBy": "David Fincher", "starring": "Morgan Freeman", "dateAdded": "22 Sep 1995",
+         "avgRating": "8.6", "imdbId": "tt0114369", "item_id": "2"},
+        {"title": "Seven Samurai", "directedBy": "Akira Kurosawa", "starring": "Hideo Oguni",
+         "dateAdded": "19 Nov 1956", "avgRating": "8.6", "imdbId": "tt0047478", "item_id": "2"},
+        {"title": "It's a Wonderful Life", "directedBy": "Frank Capra", "starring": "Albert Hackett",
+         "dateAdded": "07 Jan 1947", "avgRating": "8.7", "imdbId": "tt0038650", "item_id": "2"},
+        {"title": "The Silence of the Lambs", "directedBy": "Jonathan Demme", "starring": "Ted Tally",
+         "dateAdded": "14 Feb 1991", "avgRating": "8.6", "imdbId": "tt0102926", "item_id": "2"},
+        {"title": "Saving Private Ryan", "directedBy": "Steven Spielberg", "starring": "Matt Damon",
+         "dateAdded": "24 Jul 1998", "avgRating": "8.6", "imdbId": "tt0120815", "item_id": "2"},
+        {"title": "City of God", "directedBy": "Fernando Meirelles", "starring": "B. Mantovani",
+         "dateAdded": "13 Feb 2004", "avgRating": "8.6", "imdbId": "tt0317248", "item_id": "2"},
+        {"title": "Life Is Beautiful", "directedBy": "Roberto Benigni", "starring": "Roberto Benigni",
+         "dateAdded": "20 Dec 1997", "avgRating": "8.6", "imdbId": "tt0118799", "item_id": "2"},
+        {"title": "The Green Mile", "directedBy": "Frank Darabont", "starring": "Frank Darabont",
+         "dateAdded": "10 Dec 1999", "avgRating": "8.6", "imdbId": "tt0120689", "item_id": "2"},
+        {"title": "Star Wars", "directedBy": "George Lucas",
+         "starring": "Mark Hamill", "dateAdded": "25 May 1977", "avgRating": "8.6", "imdbId": "tt0076759", "item_id": "2"},
+{"title": "Interstellar", "directedBy": "Christopher Nolan", "starring": "Christopher Nolan",
+ "dateAdded": "07 Nov 2014", "avgRating": "8.7", "imdbId": "tt0816692", "item_id": "2"},
+{"title": "Terminator 2: Judgment Day", "directedBy": "James Cameron", "starring": "Arnold Schwarzenegger",
+ "dateAdded": "03 Jul 1991", "avgRating": "8.6", "imdbId": "tt0103064", "item_id": "2"},
+{"title": "Back to the Future", "directedBy": "Robert Zemeckis", "starring": "Bob Gale", "dateAdded": "03 Jul 1985",
+ "avgRating": "8.6", "imdbId": "tt0088763", "item_id": "2"},
+{"title": "Spirited Away", "directedBy": "Hayao Miyazaki", "starring": "Daveigh Chase", "dateAdded": "28 Mar 2003",
+ "avgRating": "8.6", "imdbId": "tt0245429", "item_id": "2"},
+{"title": "Psycho", "directedBy": "Alfred Hitchcock", "starring": "Robert Bloch", "dateAdded": "08 Sep 1960",
+ "avgRating": "8.6", "imdbId": "tt0054215", "item_id": "2"},
+{"title": "The Pianist", "directedBy": "Roman Polanski", "starring": "Wladyslaw Szpilman", "dateAdded": "28 Mar 2003",
+ "avgRating": "8.6", "imdbId": "tt0253474", "item_id": "2"},
+{"title": "Leon: The Professional", "directedBy": "Luc Besson", "starring": "Jean Reno", "dateAdded": "18 Nov 1994",
+ "avgRating": "8.6", "imdbId": "tt0110413", "item_id": "2"},
+{"title": "Parasite", "directedBy": "Bong Joon Ho", "starring": "Han Jin-won", "dateAdded": "08 Nov 2019",
+ "avgRating": "8.5", "imdbId": "tt6751668", "item_id": "2"},
+{"title": "The Lion King", "directedBy": "Roger Allers", "starring": "Irene Mecchi", "dateAdded": "24 Jun 1994",
+ "avgRating": "8.5", "imdbId": "tt0110357", "item_id": "2"},
+{"title": "Gladiator", "directedBy": "Ridley Scott", "starring": "John Logan", "dateAdded": "05 May 2000",
+ "avgRating": "8.5", "imdbId": "tt0172495", "item_id": "2"},
+{"title": "American History X", "directedBy": "Tony Kaye", "starring": "Beverly D'Angelo", "dateAdded": "20 Nov 1998",
+ "avgRating": "8.6", "imdbId": "tt0120586", "item_id": "2"},
+{"title": "The Usual Suspects", "directedBy": "Bryan Singer", "starring": "Kevin Spacey", "dateAdded": "16 Aug 1995",
+ "avgRating": "8.5", "imdbId": "tt0114814", "item_id": "2"},
+{"title": "The Departed", "directedBy": "Martin Scorsese", "starring": "Alan Mak", "dateAdded": "06 Oct 2006",
+ "avgRating": "8.5", "imdbId": "tt0407887", "item_id": "2"},
+{"title": "The Prestige", "directedBy": "Christopher Nolan", "starring": "Christopher Nolan",
+ "dateAdded": "20 Oct 2006", "avgRating": "8.5", "imdbId": "tt0482571", "item_id": "2"},
+{"title": "Casablanca", "directedBy": "Michael Curtiz", "starring": "Philip G. Epstein", "dateAdded": "23 Jan 1943",
+ "avgRating": "8.5", "imdbId": "tt0034583", "item_id": "2"},
+{"title": "Whiplash", "directedBy": "Damien Chazelle", "starring": "J.K. Simmons", "dateAdded": "15 Oct 2014",
+ "avgRating": "8.6", "imdbId": "tt2582802", "item_id": "2"},
+{"title": "The Intouchables", "directedBy": "Olivier Nakache", "starring": "Olivier Nakache",
+ "dateAdded": "02 Nov 2011", "avgRating": "8.5", "imdbId": "tt1675434", "item_id": "2"},
+{"title": "Modern Times", "directedBy": "Charles Chaplin", "starring": "Charles Chaplin", "dateAdded": "25 Feb 1936",
+ "avgRating": "8.6", "imdbId": "tt0027977", "item_id": "2"},
+{"title": "Once Upon a Time in the West", "directedBy": "Sergio Leone", "starring": "Henry Fonda",
+ "dateAdded": "04 Jul 1969", "avgRating": "8.5", "imdbId": "tt0064116", "item_id": "2"},
+{"title": "Hara-Kiri", "directedBy": "Masaki Kobayashi", "starring": "Shinobu Hashimoto", "dateAdded": "04 Aug 1964",
+ "avgRating": "8.6", "imdbId": "tt0056058", "item_id": "2"},
+{"title": "Grave of the Fireflies", "directedBy": "Isao Takahata", "starring": "Isao Takahata",
+ "dateAdded": "26 Jul 1989", "avgRating": "8.6", "imdbId": "tt0095327", "item_id": "2"},
+{"title": "Alien", "directedBy": "Ridley Scott", "starring": "Sigourney Weaver", "dateAdded": "22 Jun 1979",
+ "avgRating": "8.6", "imdbId": "tt0078748", "item_id": "2"},
+{"title": "Rear Window", "directedBy": "Alfred Hitchcock", "starring": "James Stewart", "dateAdded": "01 Sep 1954",
+ "avgRating": "8.5", "imdbId": "tt0047396", "item_id": "2"},
+{"title": "City Lights", "directedBy": "Charles Chaplin", "starring": "Harry Carr", "dateAdded": "07 Mar 1931",
+ "avgRating": "8.5", "imdbId": "tt0021749", "item_id": "2"},
+{"title": "Memento", "directedBy": "Christopher Nolan", "starring": "Guy Pearce", "dateAdded": "25 May 2001",
+ "avgRating": "8.6", "imdbId": "tt0209144", "item_id": "2"},
+{"title": "Cinema Paradiso", "directedBy": "Giuseppe Tornatore", "starring": "Philippe Noiret",
+ "dateAdded": "23 Feb 1990", "avgRating": "8.6", "imdbId": "tt0095765", "item_id": "2"},
+{"title": "Apocalypse Now", "directedBy": "Francis Ford Coppola", "starring": "Francis Ford Coppola",
+ "dateAdded": "15 Aug 1979", "avgRating": "8.5", "imdbId": "tt0078788", "item_id": "2"},
+{"title": "Indiana Jones and the Raiders of the Lost Ark", "directedBy": "Steven Spielberg",
+ "starring": "Philip Kaufman", "dateAdded": "12 Jun 1981", "avgRating": "8.4", "imdbId": "tt0082971", "item_id": "2"},
+{"title": "Django Unchained", "directedBy": "Quentin Tarantino", "starring": "Christoph Waltz",
+ "dateAdded": "25 Dec 2012", "avgRating": "8.4", "imdbId": "tt1853728", "item_id": "2"},
+{"title": "WALL-E", "directedBy": "Andrew Stanton", "starring": "Pete Docter", "dateAdded": "27 Jun 2008",
+ "avgRating": "8.4", "imdbId": "tt0910970", "item_id": "2"},
+{"title": "The Lives of Others", "directedBy": "Florian Henckel von Donnersmarck", "starring": "Ulrich M??he",
+ "dateAdded": "30 Mar 2007", "avgRating": "8.4", "imdbId": "tt0405094", "item_id": "2"},
+{"title": "Sunset Blvd.", "directedBy": "Billy Wilder", "starring": "D.M. Marshman Jr.", "dateAdded": "04 Aug 1950",
+ "avgRating": "8.6", "imdbId": "tt0043014", "item_id": "2"},
+{"title": "The Shining", "directedBy": "Stanley Kubrick", "starring": "Diane Johnson", "dateAdded": "13 Jun 1980",
+ "avgRating": "8.4", "imdbId": "tt0081505", "item_id": "2"},
+{"title": "Paths of Glory", "directedBy": "Stanley Kubrick", "starring": "Jim Thompson", "dateAdded": "25 Dec 1957",
+ "avgRating": "8.4", "imdbId": "tt0050825", "item_id": "2"},
+{"title": "The Great Dictator", "directedBy": "Charles Chaplin", "starring": "Charles Chaplin",
+ "dateAdded": "07 Mar 1941", "avgRating": "8.6", "imdbId": "tt0032553", "item_id": "2"},
+{"title": "Avengers: Infinity War", "directedBy": "Anthony Russo", "starring": "Christopher Markus",
+ "dateAdded": "27 Apr 2018", "avgRating": "8.4", "imdbId": "tt4154756", "item_id": "2"},
+{"title": "Witness for the Prosecution", "directedBy": "Billy Wilder", "starring": "Billy Wilder",
+ "dateAdded": "06 Feb 1958", "avgRating": "8.6", "imdbId": "tt0051201", "item_id": "2"},
+{"title": "Aliens", "directedBy": "James Cameron", "starring": "David Giler", "dateAdded": "18 Jul 1986",
+ "avgRating": "8.4", "imdbId": "tt0090605", "item_id": "2"},
+{"title": "American Beauty", "directedBy": "Sam Mendes", "starring": "Thora Birch", "dateAdded": "01 Oct 1999",
+ "avgRating": "8.6", "imdbId": "tt0090605", "item_id": "2"},
+{"title": "The Dark Knight Rises", "directedBy": "Christopher Nolan", "starring": "Christopher Nolan",
+ "dateAdded": "20 Jul 2012", "avgRating": "8.4", "imdbId": "tt1345836", "item_id": "2"},
+{"title": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb", "directedBy": "Stanley Kubrick",
+ "starring": "Peter George", "dateAdded": "29 Jan 1964", "avgRating": "8.4", "imdbId": "tt0057012", "item_id": "2"},
+{"title": "Spider-Man: Into the Spider-Verse", "directedBy": "Bob Persichetti", "starring": "Rodney Rothman",
+ "dateAdded": "14 Dec 2018", "avgRating": "8.4", "imdbId": "tt4633694", "item_id": "2"},
+{"title": "Joker", "directedBy": "Todd Phillips", "starring": "Scott Silver", "dateAdded": "04 Oct 2019",
+ "avgRating": "8.4", "imdbId": "tt7286456", "item_id": "2"},
+{"title": "Old Boy", "directedBy": "Park Chan-wook", "starring": "Nobuaki Minegishi", "dateAdded": "21 Nov 2003",
+ "avgRating": "8.4", "imdbId": "tt0364569", "item_id": "2"},
+{"title": "Braveheart", "directedBy": "Mel Gibson", "starring": "Mel Gibson", "dateAdded": "24 May 1995",
+ "avgRating": "8.4", "imdbId": "tt0112573", "item_id": "2"},
+{"title": "Toy Story", "directedBy": "John Lasseter", "starring": "Pete Docter", "dateAdded": "22 Nov 1995",
+ "avgRating": "8.6", "imdbId": "tt0114709", "item_id": "2"},
+{"title": "Amadeus", "directedBy": "Milos Forman", "starring": "Zdenek Mahler", "dateAdded": "19 Sep 1984",
+ "avgRating": "8.4", "imdbId": "tt0086879", "item_id": "2"},
+{"title": "Coco", "directedBy": "Lee Unkrich", "starring": "Lee Unkrich", "dateAdded": "22 Nov 2017",
+ "avgRating": "8.4", "imdbId": "tt2380307", "item_id": "2"},
+{"title": "Spider-Man: No Way Home", "directedBy": "Jon Watts", "starring": "Erik Sommers", "dateAdded": "17 Dec 2021",
+ "avgRating": "8.5", "imdbId": "tt10872600", "item_id": "2"},
+{"title": "Inglourious Basterds", "directedBy": "Quentin Tarantino", "starring": "Brad Pitt",
+ "dateAdded": "21 Aug 2009", "avgRating": "8.3", "imdbId": "tt0361748", "item_id": "2"},
+{"title": "The Boat", "directedBy": "Wolfgang Petersen", "starring": "J Prochnow", "dateAdded": "10 Feb 1982",
+ "avgRating": "8.6", "imdbId": "tt0082096", "item_id": "2"},
+{"title": "Avengers: Endgame", "directedBy": "Anthony Russo", "starring": "Christopher Markus",
+ "dateAdded": "26 Apr 2019", "avgRating": "8.4", "imdbId": "tt4154796", "item_id": "2"},
+{"title": "Princess Mononoke", "directedBy": "Hayao Miyazaki", "starring": "Neil Gaiman", "dateAdded": "19 Dec 1997",
+ "avgRating": "8.4", "imdbId": "tt0119698", "item_id": "2"},
+{"title": "Once Upon a Time in America", "directedBy": "Sergio Leone", "starring": "Piero De Bernardi",
+ "dateAdded": "01 Jun 1984", "avgRating": "8.4", "imdbId": "tt0087843", "item_id": "2"},
+{"title": "Good Will Hunting", "directedBy": "Gus Van Sant", "starring": "Robin Williams", "dateAdded": "09 Jan 1998",
+ "avgRating": "8.3", "imdbId": "tt0119217", "item_id": "2"},
+{"title": "Toy Story 3", "directedBy": "Lee Unkrich", "starring": "Andrew Stanton", "dateAdded": "18 Jun 2010",
+ "avgRating": "8.3", "imdbId": "tt0435761", "item_id": "2"},
+{"title": "Requiem for a Dream", "directedBy": "Darren Aronofsky", "starring": "Jared Leto", "dateAdded": "15 Dec 2000",
+ "avgRating": "8.6", "imdbId": "tt0180093", "item_id": "2"},
+{"title": "3 Idiots", "directedBy": "Rajkumar Hirani", "starring": "Vidhu Vinod Chopra", "dateAdded": "25 Dec 2009",
+ "avgRating": "8.6", "imdbId": "tt1187043", "item_id": "2"},
+{"title": "Your Name.", "directedBy": "Makoto Shinkai", "starring": "Clark Cheng", "dateAdded": "07 Apr 2017",
+ "avgRating": "8.9", "imdbId": "tt5311514", "item_id": "2"},
+{"title": "Singin' in the Rain", "directedBy": "Stanley Donen", "starring"
+: "Betty Comden", "dateAdded": "11 Apr 1952", "avgRating": "8.9", "imdbId": "tt0045152", "item_id": "2"},
+{"title": "Star Wars: Episode VI - Return of the Jedi", "directedBy": "Richard Marquand", "starring": "George Lucas",
+ "dateAdded": "25 May 1983", "avgRating": "8.3", "imdbId": "tt0086190", "item_id": "2"},
+{"title": "Reservoir Dogs", "directedBy": "Quentin Tarantino", "starring": "Roger Avary", "dateAdded": "02 Sep 1992",
+ "avgRating": "8.3", "imdbId": "tt0105236", "item_id": "2"},
+{"title": "Eternal Sunshine of the Spotless Mind", "directedBy": "Michel Gondry", "starring": "Michel Gondry",
+ "dateAdded": "19 Mar 2004", "avgRating": "8.3", "imdbId": "tt0338013", "item_id": "2"},
+{"title": "2001: A Space Odyssey", "directedBy": "Stanley Kubrick", "starring": "Keir Dullea",
+ "dateAdded": "24 Jun 1970", "avgRating": "8.3", "imdbId": "tt0062622", "item_id": "2"},
+{"title": "High and Low", "directedBy": "Akira Kurosawa", "starring": "R. Kikushima", "dateAdded": "26 Nov 1963",
+ "avgRating": "8.6", "imdbId": "tt0057565", "item_id": "2"},
+{"title": "Citizen Kane", "directedBy": "Orson Welles", "starring": "John Houseman", "dateAdded": "05 Sep 1941",
+ "avgRating": "8.3", "imdbId": "tt0033467", "item_id": "2"},
+{"title": "Lawrence of Arabia", "directedBy": "David Lean", "starring": "Michael Wilson", "dateAdded": "11 Dec 1962",
+ "avgRating": "8.3", "imdbId": "tt0056172", "item_id": "2"},
+{"title": "Capernaum", "starring": "Zain Al Rafeea", "dateAdded": "20 Sep 2018", "avgRating": "8.4",
+ "imdbId": "tt8267604", "item_id": "2"},
+{"title": "M", "directedBy": "Fritz Lang", "starring": "Fritz Lang", "dateAdded": "31 Aug 1931", "avgRating": "8.6",
+ "imdbId": "tt0022100", "item_id": "2"},
+{"title": "North by Northwest", "directedBy": "Alfred Hitchcock", "starring": "Cary Grant", "dateAdded": "18 Dec 1959",
+ "avgRating": "8.6", "imdbId": "tt0053125", "item_id": "2"},
+{"title": "The Hunt", "starring": "Thomas Bo Larsen", "dateAdded": "10 Jan 2013", "avgRating": "8.3",
+ "imdbId": "tt2106476", "item_id": "2"},
+{"title": "Vertigo", "directedBy": "Alfred Hitchcock", "starring": "Samuel A. Taylor", "dateAdded": "22 May 1958",
+ "avgRating": "8.3", "imdbId": "tt0052357", "item_id": "2"},
+{"title": "Amlie", "directedBy": "Jean-Pierre Jeunet", "starring": "Audrey Tautou", "dateAdded": "08 Feb 2002",
+ "avgRating": "8.3", "imdbId": "tt0211915", "item_id": "2"}
+    ]
+)
 
-result = database.comments.find({'name': 'Teresa Thomas'})
+print("records inserted")
+#result = database.metadata.find({})
 #for comm in result:
-   # print(comm)
+    #print(comm)
+
 
 # Drop index
-database.restaurants.drop_index('name_1')
+#database.restaurants.drop_index('name_1')
 
-query_result = database.comments.find({'name': 'Teresa Thomas'}).explain()
-print(query_result['executionStats'])
-# 'executionTimeMillis': 25, 'totalKeysExamined': 0, 'totalDocsExamined': 41079, 'executionStages': {'stage': 'COLLSCAN'
+#query_result = database.metadata.find({'title': 'Jumanji (1995)'})
+#print( query_result['executionStats'])
+#print("--------------")
+# 'executionTimeMillis': 32333, 'totalKeysExamined': 0, 'totalDocsExamined': 84661, 'executionStages': {'stage': 'COLLSCAN',
 
-database.comments.create_index('name')
-index_info = database.comments.index_information()
-print(index_info)
+#database.metadata.create_index('title')
+#index_info = database.comments.index_information()
+#print(index_info)
 
-query_result_afterIndex = database.comments.find({'name': 'Teresa Thomas'}).explain()
-print(query_result_afterIndex['executionStats'])
+#query_result_afterIndex = database.metadata.find({'title': 'Jumanji (1995)'}).explain()
+#print(query_result_afterIndex['executionStats'])
 
 
-index_info = database.comments.index_information()
-print(index_info)
+#index_info = database.comments.index_information()
+#print(index_info)
 
-index_stats = database.comments.aggregate( [ {"$indexStats": { } } ] )
-for index in index_stats:
-    print(index)
+#index_stats = database.comments.aggregate( [ {"$indexStats": { } } ] )
+#for index in index_stats:
+    #print(index)
