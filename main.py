@@ -14,10 +14,14 @@ COLLECTION_SYS = database.system.profile
 
 database.command('profile', 1, filter)
 
-slow_queries = COLLECTION_SYS.find(filter)
-for query in slow_queries:
+list_slow_queries = COLLECTION_SYS.find(filter)
+for query in list_slow_queries:
     print(query['command']['filter'])
     print(query['planSummary'])
-    print(query['execStats']['inputStage']['docsExamined'])
+    print(query['docsExamined'])
+    print(query['nreturned'])
+    print(query['keysExamined'])
+
+
 
 
