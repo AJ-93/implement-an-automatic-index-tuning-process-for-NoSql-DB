@@ -223,7 +223,14 @@ print("records inserted")
 # Drop index
 #database.restaurants.drop_index('name_1')
 
-#query_result = database.metadata.find({'title': 'Jumanji (1995)'})
+query_result = database.metadata.find({'title': 'Jumanji (1995)'})
+print(query_result)
+
+query_result = database.metadata.find({'directedBy': 'John Lasseter'})
+print(query_result)
+
+query_result = database.metadata.find({'imdbId': '0113189'})
+print(query_result)
 #print( query_result['executionStats'])
 #print("--------------")
 # 'executionTimeMillis': 32333, 'totalKeysExamined': 0, 'totalDocsExamined': 84661, 'executionStages': {'stage': 'COLLSCAN',
