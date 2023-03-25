@@ -15,20 +15,21 @@ COLLECTION_SYS = database.system.profile
 database.command('profile', 1, filter)
 
 list_slow_queries = COLLECTION_SYS.find(filter)
+
 potential_index_list = []
+i=0
 for query in list_slow_queries:
-    potential_index = query['command']['filter']
-    print (potential_index.keys())
+    print(query)
+    index = query['command']['filter']
+    potential_index = list(index.keys())
     query_plan = query['planSummary']
     docs_scanned = query['docsExamined']
     docs_returned = query['nreturned']
     index_keys_used = query['keysExamined']
-    if potential_index :
+    if index is not None:
         if query_plan == 'COLLSCAN' :
-            if index_keys_used != 0:
-                if docs_scanned == docs_returned:
-                    potential_index_list[i] = potential_index
-                    i=i+1
+            if index_keys_used == 0:
+                    potential_index_list.append(potential_index)
 
 print (potential_index_list)
 
