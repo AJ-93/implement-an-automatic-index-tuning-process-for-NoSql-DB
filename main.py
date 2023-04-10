@@ -27,6 +27,7 @@ fields_of_collection = list(document.keys())
 list_slow_queries = COLLECTION_SYS.find(filter)
 
 potential_index_list = []
+potential_ind_dict_list = []
 i=0
 for query in list_slow_queries:
     print(query)
@@ -39,15 +40,34 @@ for query in list_slow_queries:
     index_keys_used = query['keysExamined']
     if index is not None:
         if (query_plan == 'COLLSCAN') and (potential_index in fields_of_collection):
-                    potential_index_list.append(potential_index)
+                    #getting the potential index list along with the time taken by the correcsponding query
+                    potential_ind_dict = {'index':query['command']['filter'], 'millis':query['millis'] }
+                    potential_ind_dict_list.append(potential_ind_dict)
+
+#sorting the index list by the time taken to execute the query in descending order
+sorted_potential_ind_dict_list = sorted(potential_ind_dict_list, key=lambda k:k['millis'], reverse=True)
 
 #Get the top 3 popular index candidate in the list
-count_index = Counter(potential_index_list)
-top_popular_index = [index[0] for index in count_index.most_common(NUMBER_OF_INDEX_CANDIDATES)]
-collection_stats = collection.stats()
-total_index_size_collection_mb = (collection_stats['totalIndexSize'])/ (1024 * 1024)
+top_popular_index_millis_list = sorted_potential_ind_dict_list[:NUMBER_OF_INDEX_CANDIDATES]
 
-if INDEX_POOL < total_index_size_collection_mb:
-    for i in range(len(top_popular_index)):
-        collection.create_index(top_popular_index[i])
-        print("index created: {top_popular_index[i]}")
+#get the filter values or index values from the dict
+index_list = [index['index'] for index in top_popular_index_millis_list]
+final_index_list = list([','.join(index.keys()) for index in index_list])
+
+collection_list = database.list_collections()
+
+total_index_size = 0
+#calcuating the total index size for the whole database
+for coll in collection_list:
+    if(coll['name']!='system.profile'):
+        collection_index_stats = database.command('collstats',coll['name'])
+        total_index_size += collection_index_stats['totalIndexSize']
+
+# taking the SI unit of conversion where 1000 bytes are equal to 1KB
+total_index_size_mb = (total_index_size)/ (1000 * 1000)
+
+#create index
+if INDEX_POOL < total_index_size_mb:
+    for i in range(len(final_index_list)):
+        collection.create_index([(final_index_list[i],1)])
+        print(f"index created: {final_index_list[i]}")
