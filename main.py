@@ -14,7 +14,7 @@ INDEX_POOL = MONGO_MEMORY * 0.3
 print(INDEX_POOL)
 
 conn = MongoClient(CONNECTION_STRING)
-filter = {"op": "query", "millis": {"$gt": 0}}
+filter = {"op": "command", "millis": {"$gt": 0}}
 
 database = conn.get_database(DATABASE)
 collection = database[COLLECTION]
