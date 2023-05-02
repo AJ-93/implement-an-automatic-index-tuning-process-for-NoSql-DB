@@ -11,10 +11,10 @@ db.command('profile', 1, filter)
 # Insert documents without index
 operation_start_time = time.time()
 for i in range(1000000):
-    collection.insert_one({'column1': f'field{i + 3000001}', 'column2': i+15, 'column3': False, 'column4': i * 0.08, 'column5': f'2022-09-0{i % 30 + 1}', 'column6': ['A', 'B', 'C', 'D','E','D'] })
+    collection.insert_one({'column1': f'field{i + 4000001}', 'column2': i+20, 'column3': True, 'column4': i * 0.07, 'column5': f'2022-10-0{i % 30 + 1}', 'column6': ['A', 'B', 'C', 'D','E','F'] })
     print(f'records inserted {i}')
 operation_end_time = time.time()
-print("Time taken to insert 1 million documents with 4 index: ", operation_end_time - operation_start_time, "seconds")
+print("Time taken to insert 1 million documents with 5 index: ", operation_end_time - operation_start_time, "seconds")
 
 # # Create index
 # collection.create_index("field1")
