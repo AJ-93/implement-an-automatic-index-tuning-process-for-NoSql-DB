@@ -6,8 +6,8 @@ conn = MongoClient("mongodb://localhost:27017")
 
 database = conn.get_database('index_test_db')
 collection = database["index_test_collection"]
-for i in range(1000000):
-    collection.delete_one({'column1': f'field{i + 6000001}'})
+for i in range(6000000):
+    collection.delete_one({'column1': f'field{i + 1000000}'})
     print(f'records deleted {i}')
 #
 # database.metadata.delete_one(

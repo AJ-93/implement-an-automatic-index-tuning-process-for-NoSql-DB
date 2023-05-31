@@ -71,3 +71,4 @@ if INDEX_POOL < total_index_size_mb:
     for i in range(len(final_index_list)):
         collection.create_index([(final_index_list[i],1)])
         print(f"index created: {final_index_list[i]}")
+else:
