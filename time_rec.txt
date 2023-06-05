@@ -1,0 +1,26 @@
+
+Time taken to insert 1 million documents with 1 index:725.8562676906586seconds
+
+Time taken to insert 1 million documents with 2 indexes:734.9740583896637seconds
+
+Time taken to insert 1 million documents with 3 index:747.6401515007019seconds
+
+Time taken to insert 1 million documents with 4 indexes:756.8885033130646seconds
+
+Time taken to insert 1 million documents with 5 indexes:775.9834220409393seconds
+
+Time taken to insert 1 million documents with 6 indexes:794.0691578388214seconds
+
+Time taken to insert 1 million documents with 7 indexes:845.0706658363342seconds
+
+Time taken to insert 1 million documents with 8 indexes:871.1012570858002seconds
+
+Time taken to insert 1 million documents with 9 indexes:891.7789485454559seconds
+
+Time taken to insert 1 million documents with 10 indexes:907.9391553401947seconds
+
+Time taken to insert 1 million documents with 11 indexes:924.0317652225494seconds
+
+Time taken to insert 1 million documents with 12 indexes:931.4158132076263seconds
+
+Time taken to insert 1 million documents with 13 indexes:1002.6393835544586seconds
