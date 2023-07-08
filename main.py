@@ -3,15 +3,16 @@ from collections import Counter
 import psutil
 
 CONNECTION_STRING = "mongodb://localhost:27017"
-DATABASE = 'movies'
-COLLECTION = 'metadata'
+DATABASE = 'movielens_dataset'
+COLLECTION = 'movies'
 NUMBER_OF_INDEX_CANDIDATES = 3
-MONGO_RAM_PROCESS = [mem for mem in psutil.process_iter(attrs=['pid', 'name']) if mem.info['name'] == 'mongod.exe']
-MONGO_MEMORY = 0.0
-if len(MONGO_RAM_PROCESS) > 0:
-    MONGO_MEMORY = MONGO_RAM_PROCESS[0].memory_info().rss / (1024 * 1024)
-INDEX_POOL = MONGO_MEMORY * 0.3
-print(INDEX_POOL)
+# MONGO_RAM_PROCESS = [mem for mem in psutil.process_iter(attrs=['pid', 'name']) if mem.info['name'] == 'mongod.exe']
+# MONGO_MEMORY = 0.0
+# if len(MONGO_RAM_PROCESS) > 0:
+#     MONGO_MEMORY = MONGO_RAM_PROCESS[0].memory_info().rss / (1024 * 1024)
+# INDEX_POOL = MONGO_MEMORY * 0.3
+# print(INDEX_POOL)
+
 
 conn = MongoClient(CONNECTION_STRING)
 filter = {"op": "command", "millis": {"$gt": 0}}
@@ -23,6 +24,7 @@ COLLECTION_SYS = database.system.profile
 database.command('profile', 1, filter)
 document = collection.find_one()
 fields_of_collection = list(document.keys())
+INDEX_POOL = (len(fields_of_collection)) - 2
 
 list_slow_queries = COLLECTION_SYS.find(filter)
 
@@ -55,20 +57,24 @@ index_list = [index['index'] for index in top_popular_index_millis_list]
 final_index_list = list([','.join(index.keys()) for index in index_list])
 
 collection_list = database.list_collections()
+indexes_list = collection.list_indexes()
+total_number_indexes = sum(1 for _ in indexes_list)
 
-total_index_size = 0
-#calcuating the total index size for the whole database
-for coll in collection_list:
-    if(coll['name']!='system.profile'):
-        collection_index_stats = database.command('collstats',coll['name'])
-        total_index_size += collection_index_stats['totalIndexSize']
 
-# taking the SI unit of conversion where 1000 bytes are equal to 1KB
-total_index_size_mb = (total_index_size)/ (1000 * 1000)
+# total_index_size = 0
+# #calcuating the total index size for the whole database
+# for coll in collection_list:
+#     if(coll['name']!='system.profile'):
+#         collection_index_stats = database.command('collstats',coll['name'])
+#         total_index_size += collection_index_stats['totalIndexSize']
+#
+# # taking the SI unit of conversion where 1000 bytes are equal to 1KB
+# total_index_size_mb = (total_index_size)/ (1000 * 1000)
 
 #create index
-if INDEX_POOL < total_index_size_mb:
+if total_number_indexes < INDEX_POOL:
     for i in range(len(final_index_list)):
         collection.create_index([(final_index_list[i],1)])
         print(f"index created: {final_index_list[i]}")
 else:
+#calculate profit for all the existing indexes
