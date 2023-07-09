@@ -48,7 +48,7 @@ def query_genres():
     profit = abs(execution_time_without_index - execution_time_with_index)
     return profit
 
-def query_rating():
+def query_ratings():
     unique_ratings = db.movies.distinct("ratings.rating")
     random.shuffle(unique_ratings)
     random_rating = random.choice(unique_ratings)

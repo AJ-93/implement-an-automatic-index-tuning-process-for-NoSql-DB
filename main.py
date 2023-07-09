@@ -2,16 +2,14 @@ from pymongo import MongoClient
 from collections import Counter
 import psutil
 
+import queries
+from queries import *
+
 CONNECTION_STRING = "mongodb://localhost:27017"
 DATABASE = 'movielens_dataset'
 COLLECTION = 'movies'
-NUMBER_OF_INDEX_CANDIDATES = 3
-# MONGO_RAM_PROCESS = [mem for mem in psutil.process_iter(attrs=['pid', 'name']) if mem.info['name'] == 'mongod.exe']
-# MONGO_MEMORY = 0.0
-# if len(MONGO_RAM_PROCESS) > 0:
-#     MONGO_MEMORY = MONGO_RAM_PROCESS[0].memory_info().rss / (1024 * 1024)
-# INDEX_POOL = MONGO_MEMORY * 0.3
-# print(INDEX_POOL)
+NUMBER_OF_INDEX_CANDIDATES = 2
+INDEX_CHANGE_THRESHOLD = 0
 
 
 conn = MongoClient(CONNECTION_STRING)
@@ -60,21 +58,89 @@ collection_list = database.list_collections()
 indexes_list = collection.list_indexes()
 total_number_indexes = sum(1 for _ in indexes_list)
 
-
-# total_index_size = 0
-# #calcuating the total index size for the whole database
-# for coll in collection_list:
-#     if(coll['name']!='system.profile'):
-#         collection_index_stats = database.command('collstats',coll['name'])
-#         total_index_size += collection_index_stats['totalIndexSize']
-#
-# # taking the SI unit of conversion where 1000 bytes are equal to 1KB
-# total_index_size_mb = (total_index_size)/ (1000 * 1000)
-
 #create index
 if total_number_indexes < INDEX_POOL:
     for i in range(len(final_index_list)):
         collection.create_index([(final_index_list[i],1)])
         print(f"index created: {final_index_list[i]}")
 else:
-#calculate profit for all the existing indexes
+    #calculate profit for all the existing indexes
+    pipeline = [
+        {"$indexStats": {}}
+    ]
+    result = list(collection.aggregate(pipeline))
+    opcount_dict = {}
+    for index in result:
+        index_name = index['name']
+        num_operations = index['accesses']['ops']
+        opcount_dict[index_name] = num_operations
+
+    indexes = collection.list_indexes()
+    final_profit_list = {}
+    for index in indexes:
+        if(index == 'movieId'):
+            profit_movieId = queries.query_movieId()
+            total_profit = float(profit_movieId) + float(opcount_dict['movieId'])
+            final_profit_list['movieId'] = total_profit
+        elif(index == 'title'):
+            profit_title = queries.query_title()
+            total_profit = float(profit_title) + float(opcount_dict['title'])
+            final_profit_list['title'] = total_profit
+        elif(index == 'genres'):
+            profit_genres = queries.query_genres()
+            total_profit = float(profit_genres) + float(opcount_dict['genres'])
+            final_profit_list['genres'] = total_profit
+        elif(index == 'ratings') or (index == 'ratings.rating') :
+            profit_ratings = queries.query_ratings()
+            total_profit = float(profit_ratings) + float(opcount_dict['ratings'])
+            final_profit_list['ratings'] = total_profit
+        elif(index == 'tags') or (index == 'tags.tag') :
+            profit_tags = queries.query_tags()
+            total_profit = float(profit_tags) + float(opcount_dict['tags'])
+            final_profit_list['tags'] = total_profit
+
+    for i in range(len(final_index_list)):
+        collection.create_index([(final_index_list[i],1)])
+        print(f"potential index created for profit check: {final_index_list[i]}")
+
+    potential_index_profit_list = {}
+
+    for potential_index in final_index_list:
+        if(potential_index == 'movieId'):
+            profit_movieId = queries.query_movieId()
+            potential_index_profit_list['movieId'] = profit_movieId
+        elif(potential_index == 'title'):
+            profit_title = queries.query_title()
+            potential_index_profit_list['title'] = profit_title
+        elif(potential_index == 'genres'):
+            profit_genres = queries.query_genres()
+            potential_index_profit_list['genres'] = profit_genres
+        elif(potential_index == 'ratings') or (potential_index == 'ratings.rating') :
+            profit_ratings = queries.query_ratings()
+            potential_index_profit_list['ratings'] = profit_ratings
+        elif(potential_index == 'tags') or (potential_index == 'tags.tag') :
+            profit_tags = queries.query_tags()
+            potential_index_profit_list['tags'] = profit_tags
+
+    #take the potential index with the highest profit
+    max_profit_potential_index = max(potential_index_profit_list, key=potential_index_profit_list.get)
+    max_profit = potential_index_profit_list[max_profit_potential_index]
+    #compare with threshold to check if index change is required
+
+    sum_profit_old = sum(final_profit_list.values())
+    sum_profit_new = sum(final_profit_list.values()) + max_profit
+
+    if((sum_profit_new - sum_profit_old) > INDEX_CHANGE_THRESHOLD):
+        min_profit_index = max(final_profit_list, key=potential_index_profit_list.get)
+        collection.drop_index(min_profit_index)
+        collection.create_index(max_profit_potential_index)
+
+
+
+
+
+
+
+
+
+

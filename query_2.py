@@ -8,6 +8,7 @@ db = client["movielens_dataset"]
 
 # Get the collection
 collection = db["movies"]
+#collection = db["system.indexes"]
 
 # # Aggregate to find the minimum and maximum ratings.rating with movie name
 # pipeline = [
@@ -51,7 +52,13 @@ collection = db["movies"]
 # random_movieid = random.choice(movieid_list)
 #
 # print(type(unique_tags[random_movieid]))
+#
+# document = collection.find_one()
+# fields_of_collection = list(document.keys())
+# print(fields_of_collection)
+pipeline = [
+    {"$indexStats": {}}
+]
+result = list(collection.aggregate(pipeline))
 
-document = collection.find_one()
-fields_of_collection = list(document.keys())
-print(fields_of_collection)
+print(result)
