@@ -4,12 +4,8 @@ import time
 
 CONNECTION_STRING = "mongodb://localhost:27017"
 conn = MongoClient(CONNECTION_STRING)
-database = 'movielens_dataset'
-collection = 'movies'
-db = conn.get_database(database)
-collection = database[collection]
-
-conn = MongoClient(CONNECTION_STRING)
+db = conn["movielens_dataset"]
+collection = db["movies"]
 def query_movieId():
     movieid_list = [i for i in range(1, 10681)]
     random.shuffle(movieid_list)
@@ -17,9 +13,8 @@ def query_movieId():
     #get time of running query without the index
     query_without_index = {"movieId": random_movieid}
     # Use $natural to disable the use of indexes
-    query_without_index["$natural"] = 1
     start_time = time.time()
-    result_without_index = collection.find(query_without_index)
+    result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
     execution_time_without_index = time.time() - start_time
     random_movieid = random_movieid + 2
     query_with_index = {"movieId": random_movieid}
@@ -35,10 +30,8 @@ def query_genres():
     random_genres = random.choice(unique_genres)
     #get time of running query without the index
     query_without_index = {"genres": random_genres}
-    # Use $natural to disable the use of indexes
-    query_without_index["$natural"] = 1
     start_time = time.time()
-    result_without_index = collection.find(query_without_index)
+    result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
     execution_time_without_index = time.time() - start_time
     random_genres = random.choice(unique_genres)
     query_with_index = {"genres": random_genres}
@@ -55,9 +48,8 @@ def query_ratings():
     #get time of running query without the index
     query_without_index = {"ratings": {"$elemMatch": {"rating": {"$gt": random_rating}}}}
     # Use $natural to disable the use of indexes
-    query_without_index["$natural"] = 1
     start_time = time.time()
-    result_without_index = collection.find(query_without_index)
+    result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
     execution_time_without_index = time.time() - start_time
     random_genres = random.choice(unique_ratings)
     query_with_index = {"ratings": {"$elemMatch": {"rating": {"$gt": random_rating}}}}
@@ -76,9 +68,8 @@ def query_tags():
     #get time of running query without the index
     query_without_index = {"tags": {"$elemMatch": {"tag": {"$eq": unique_ratings[random_tag_number]}}}}
     # Use $natural to disable the use of indexes
-    query_without_index["$natural"] = 1
     start_time = time.time()
-    result_without_index = collection.find(query_without_index)
+    result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
     execution_time_without_index = time.time() - start_time
     random.shuffle(tag_numbers)
     random_tag_number = random.choice(tag_numbers)
@@ -99,9 +90,8 @@ def query_title():
     #get time of running query without the index
     query_without_index = {"title":find_title }
     # Use $natural to disable the use of indexes
-    query_without_index["$natural"] = 1
     start_time = time.time()
-    result_without_index = collection.find(query_without_index)
+    result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
     execution_time_without_index = time.time() - start_time
     random_movieid = random.choice(movieid_list)
     query_with_index = {"title": unique_titles[random_movieid]}
@@ -110,3 +100,6 @@ def query_title():
     execution_time_with_index = time.time() - start_time_index
     profit = abs(execution_time_without_index - execution_time_with_index)
     return profit
+
+
+
