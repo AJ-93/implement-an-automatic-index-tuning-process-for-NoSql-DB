@@ -15,11 +15,15 @@ def query_movieId():
     # Use $natural to disable the use of indexes
     start_time = time.time()
     result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
+    for doc in result_without_index:
+        pass
     execution_time_without_index = time.time() - start_time
     random_movieid = random_movieid + 2
     query_with_index = {"movieId": random_movieid}
     start_time_index = time.time()
-    result_with_index = collection.find(query_with_index).hint("movieId")
+    result_with_index = collection.find(query_with_index).hint([("movieId", 1)])
+    for doc in result_with_index:
+        pass
     execution_time_with_index = time.time() - start_time_index
     profit = abs(execution_time_without_index - execution_time_with_index)
     return profit
@@ -32,11 +36,15 @@ def query_genres():
     query_without_index = {"genres": random_genres}
     start_time = time.time()
     result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
+    for doc in result_without_index:
+        pass
     execution_time_without_index = time.time() - start_time
     random_genres = random.choice(unique_genres)
     query_with_index = {"genres": random_genres}
     start_time_index = time.time()
-    result_with_index = collection.find(query_with_index).hint("genres")
+    result_with_index = collection.find(query_with_index).hint([("genres", 1)])
+    for doc in result_with_index:
+        pass
     execution_time_with_index = time.time() - start_time_index
     profit = abs(execution_time_without_index - execution_time_with_index)
     return profit
@@ -50,11 +58,15 @@ def query_ratings():
     # Use $natural to disable the use of indexes
     start_time = time.time()
     result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
+    for doc in result_without_index:
+        pass
     execution_time_without_index = time.time() - start_time
     random_genres = random.choice(unique_ratings)
     query_with_index = {"ratings": {"$elemMatch": {"rating": {"$gt": random_rating}}}}
     start_time_index = time.time()
-    result_with_index = collection.find(query_with_index).hint("ratings.rating")
+    result_with_index = collection.find(query_with_index).hint([("ratings", 1)])
+    for doc in result_with_index:
+        pass
     execution_time_with_index = time.time() - start_time_index
     profit = abs(execution_time_without_index - execution_time_with_index)
     return profit
@@ -70,13 +82,17 @@ def query_tags():
     # Use $natural to disable the use of indexes
     start_time = time.time()
     result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
+    for doc in result_without_index:
+        pass
     execution_time_without_index = time.time() - start_time
     random.shuffle(tag_numbers)
     random_tag_number = random.choice(tag_numbers)
     #get time of running query without the index
-    query_with_index = {"tags.tag": unique_ratings[random_tag_number]}
+    query_with_index = {"tags": {"$elemMatch": {"tag": {"$eq": unique_ratings[random_tag_number]}}}}
     start_time_index = time.time()
-    result_with_index = collection.find(query_with_index).hint("tags.tag")
+    result_with_index = collection.find(query_with_index).hint([("tags", 1)])
+    for doc in result_with_index:
+        pass
     execution_time_with_index = time.time() - start_time_index
     profit = abs(execution_time_without_index - execution_time_with_index)
     return profit
@@ -92,11 +108,15 @@ def query_title():
     # Use $natural to disable the use of indexes
     start_time = time.time()
     result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
+    for doc in result_without_index:
+        pass
     execution_time_without_index = time.time() - start_time
     random_movieid = random.choice(movieid_list)
     query_with_index = {"title": unique_titles[random_movieid]}
     start_time_index = time.time()
-    result_with_index = collection.find(query_with_index).hint("title")
+    result_with_index = collection.find(query_with_index).hint([("title", 1)])
+    for doc in result_with_index:
+        pass
     execution_time_with_index = time.time() - start_time_index
     profit = abs(execution_time_without_index - execution_time_with_index)
     return profit
