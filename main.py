@@ -60,13 +60,19 @@ final_index_list = list([','.join(index.keys()) for index in index_list])
 collection_list = database.list_collections()
 indexes_list = collection.list_indexes()
 total_number_indexes = sum(1 for _ in indexes_list)
-print(total_number_indexes)
 #create index
-if total_number_indexes < INDEX_POOL:
+while (total_number_indexes < INDEX_POOL):
     for i in range(len(final_index_list)):
         collection.create_index([(final_index_list[i],1)])
+        final_index_list.pop(i)
         print(f"index created: {final_index_list[i]}")
-else:
+        indexes_list = collection.list_indexes()
+        total_number_indexes = sum(1 for _ in indexes_list)
+
+indexes_list = collection.list_indexes()
+total_number_indexes = sum(1 for _ in indexes_list)
+
+if total_number_indexes >= INDEX_POOL and len(final_index_list) != 0 :
             #calculate profit for all the existing indexes
             pipeline = [
                 {"$indexStats": {}}

@@ -41,11 +41,11 @@ collection = db["movies"]
 # # Iterate over the result
 
 # start_time = time.time()
-# result = collection.find({"tags": {"$elemMatch": {"tag": {"$eq": "bizarre"}}}}).hint([("tags", 1)])
+#result = collection.find({"tags": {"$elemMatch": {"tag": {"$eq": "bizarre"}}}}).hint([("tags", 1)])
+result = collection.find({"title":"Jumanji (1995)"})
 # #execution_time_without_index = time.time() - start_time
-#
-# for doc in result:
-#      pass
+for doc in result:
+     print(doc)
 # execution_time_without_index = time.time() - start_time
 # # print(execution_time_without_index)
 # print(execution_time_without_index)
@@ -58,11 +58,11 @@ collection = db["movies"]
 # result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
 # for doc in result_without_index:
 #     print(doc)
-pipeline = [
-    {"$indexStats": {}}
-]
-result = list(collection.aggregate(pipeline))
-opcount_dict = {}
-for index in result:
-    index_name = index['name'].rsplit('_', 1)[0]
-    print(index_name)
+# pipeline = [
+#     {"$indexStats": {}}
+# ]
+# result = list(collection.aggregate(pipeline))
+# opcount_dict = {}
+# for index in result:
+#     index_name = index['name'].rsplit('_', 1)[0]
+#     print(index_name)
