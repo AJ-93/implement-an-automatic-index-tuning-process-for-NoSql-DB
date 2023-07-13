@@ -10,42 +10,43 @@ db = client["movielens_dataset"]
 # Get the collection
 collection = db["movies"]
 
-# # Query for documents with genre = "Comedy" and rating > 3
-# query = {
-#     "$match": {
-#         "genres": "Comedy",
-#         "ratings": {"$elemMatch": {"rating": {"$gt": 3}}}
-#     }
-# }
-#
-# # Projection to include specific fields
-# projection = {
-#     "$project": {
-#         "movieId": 1,
-#         "title": 1,
-#         "tags.tag": 1,
-#         "ratings.rating": 1
-#     }
-# }
-#
-# # Sorting by rating in descending order
-# sort = {
-#     "$sort": {
-#         "ratings.rating": -1
-#     }
-# }
-#
-# # Execute the aggregation pipeline
-# result = collection.aggregate([query, projection, sort])
-#
-# # Iterate over the result
+# Query for documents with genre = "Comedy" and rating > 3
+query = {
+    "$match": {
+        "genres": "Romance",
+        "ratings": {"$elemMatch": {"rating": {"$gt": 4}}}
+    }
+}
+
+
+# Projection to include specific fields
+projection = {
+    "$project": {
+        "movieId": 1,
+        "title": 1,
+        "tags.tag": 1,
+        "ratings.rating": 1
+    }
+}
+
+# Sorting by rating in descending order
+sort = {
+    "$sort": {
+        "ratings.rating": -1
+    }
+}
+
+# Execute the aggregation pipeline
+start_time = time.time()
+result = collection.aggregate([query, projection, sort])
+for i in result:
+     print(i)
+execution_time = time.time() - start_time
+
+print(execution_time)
 
 # start_time = time.time()
 #result = collection.find({"tags": {"$elemMatch": {"tag": {"$eq": "bizarre"}}}}).hint([("tags", 1)])
-result = collection.find({"title":"Jumanji (1995)"})
-# #execution_time_without_index = time.time() - start_time
-for doc in result:
-     print(doc)
 # execution_time_without_index = time.time() - start_time
 # # print(execution_time_without_index)
 # print(execution_time_without_index)

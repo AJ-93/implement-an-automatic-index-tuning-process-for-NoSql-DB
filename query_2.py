@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import time
 import random
 # Create a MongoDB client
 client = MongoClient("mongodb://localhost:27017")
@@ -10,35 +11,46 @@ db = client["movielens_dataset"]
 collection = db["movies"]
 #collection = db["system.indexes"]
 
-# # Aggregate to find the minimum and maximum ratings.rating with movie name
-# pipeline = [
-#     {
-#         "$unwind": "$ratings"
-#     },
-#     {
-#         "$group": {
-#             "_id": None,
-#             "minRating": { "$min": "$ratings.rating" },
-#             "maxRating": { "$max": "$ratings.rating" },
-#             "minMovie": { "$min": "$title" },
-#             "maxMovie": { "$max": "$title" }
-#         }
-#     }
-# ]
-#
-# # Execute the aggregation pipeline
-# result = list(collection.aggregate(pipeline))
-#
-# # Extract the results
-# min_rating = result[0]["minRating"]
-# max_rating = result[0]["maxRating"]
-# min_movie = result[0]["minMovie"]
-# max_movie = result[0]["maxMovie"]
-#
-# # Print the results
-# print("Movie with Minimum Rating: ", min_movie, " - Rating: ", min_rating)
-# print("Movie with Maximum Rating: ", max_movie, " - Rating: ", max_rating)
-# print(result)
+# Aggregate to find the minimum and maximum ratings.rating with movie name in a particular genre
+pipeline = [
+    {
+        "$match": {
+            "genres": "Children"
+    }
+
+    },
+    {
+        "$unwind": "$ratings"
+    },
+    {
+        "$group": {
+            "_id": None,
+            "minRating": { "$min": "$ratings.rating" },
+            "maxRating": { "$max": "$ratings.rating" },
+            "minMovie": { "$min": "$title" },
+            "maxMovie": { "$max": "$title" },
+            "maxGenre": {"$max": "$genres"}
+        }
+    }
+]
+
+# Execute the aggregation pipeline
+start_time = time.time()
+result = list(collection.aggregate(pipeline))
+
+# Extract the results
+min_rating = result[0]["minRating"]
+max_rating = result[0]["maxRating"]
+min_movie = result[0]["minMovie"]
+max_movie = result[0]["maxMovie"]
+genre = result[0]["maxGenre"]
+
+# Print the results
+print("Movie with Minimum Rating: ", min_movie, " - Rating: ", min_rating, "in the Genre of", genre )
+print("Movie with Maximum Rating: ", max_movie, " - Rating: ", max_rating, "in the Genre of", genre )
+execution_time = time.time() - start_time
+
+print(execution_time)
 
 # indexes = collection.list_indexes()
 # print(indexes)
@@ -56,9 +68,9 @@ collection = db["movies"]
 # document = collection.find_one()
 # fields_of_collection = list(document.keys())
 # print(fields_of_collection)
-pipeline = [
-    {"$indexStats": {}}
-]
-result = list(collection.aggregate(pipeline))
+# pipeline = [
+#     {"$indexStats": {}}
+# ]
+# result = list(collection.aggregate(pipeline))
 
 print(result)

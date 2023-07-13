@@ -13,7 +13,14 @@ INDEX_CHANGE_THRESHOLD = 0
 
 
 conn = MongoClient(CONNECTION_STRING)
-filter = {"op": "query", "millis": {"$gt": 0}}
+filter = {
+    "$or": [
+        {"op": "command"},
+        {"op": "query"}
+        ],
+    "millis": {"$gt": 0}
+
+}
 
 database = conn.get_database(DATABASE)
 collection = getattr(database, COLLECTION)
@@ -30,44 +37,51 @@ potential_index_list = []
 potential_ind_dict_list = []
 indexes_list = collection.list_indexes()
 index_list_object = [index['name'].rsplit('_', 1)[0] for index in indexes_list]
-i=0
 for query in list_slow_queries:
     print(query)
-    index = query['command']['filter']
-    potential_index = index.keys()
-    potential_index = ' '.join(potential_index)
+    if query['op'] == 'query':
+        index = query['command']['filter']
+        potential_index = list(index)
+    elif (query['op'] == "command") and 'pipeline' in query['command'] and '$match' in query['command']['pipeline'][0]:
+        index = query['command']['pipeline'][0]['$match']
+        potential_index = list(index)
+    else:
+        continue
     if 'errMsg' not in query:
         query_plan = query['planSummary']
         docs_scanned = query['docsExamined']
         docs_returned = query['nreturned']
         index_keys_used = query['keysExamined']
-        if index is not None:
-            if (query_plan == 'COLLSCAN') and (potential_index in fields_of_collection) and (potential_index not in index_list_object):
-                        #getting the potential index list along with the time taken by the correcsponding query
-                        potential_ind_dict = {'index':index, 'millis':query['millis'] }
-                        potential_ind_dict_list.append(potential_ind_dict)
+        if potential_index is not None:
+            if (query_plan == 'COLLSCAN') and (potential_index not in index_list_object):
+                    for i in potential_index:
+                        print(i)
+                        if i in fields_of_collection:
+                            potential_ind_dict = {'index': i, 'millis': query['millis']}
+                            potential_ind_dict_list.append(potential_ind_dict)
 
 print(potential_ind_dict_list)
 #sorting the index list by the time taken to execute the query in descending order
 sorted_potential_ind_dict_list = sorted(potential_ind_dict_list, key=lambda k:k['millis'], reverse=True)
 #Get the top 3 popular index candidate in the list
 top_popular_index_millis_list = sorted_potential_ind_dict_list[:NUMBER_OF_INDEX_CANDIDATES]
-
 #get the filter values or index values from the dict
 index_list = [index['index'] for index in top_popular_index_millis_list]
-final_index_list = list([','.join(index.keys()) for index in index_list])
-
+final_index_list = list(index_list)
+print(final_index_list)
 collection_list = database.list_collections()
 indexes_list = collection.list_indexes()
 total_number_indexes = sum(1 for _ in indexes_list)
 #create index
-while (total_number_indexes < INDEX_POOL):
-    for i in range(len(final_index_list)):
-        collection.create_index([(final_index_list[i],1)])
-        final_index_list.pop(i)
-        print(f"index created: {final_index_list[i]}")
+if total_number_indexes < INDEX_POOL:
+    f_index_list = final_index_list.copy()
+    for element in f_index_list:
+        collection.create_index([(element,1)])
+        final_index_list.remove(element)
         indexes_list = collection.list_indexes()
         total_number_indexes = sum(1 for _ in indexes_list)
+        if total_number_indexes == INDEX_POOL:
+            break
 
 indexes_list = collection.list_indexes()
 total_number_indexes = sum(1 for _ in indexes_list)
