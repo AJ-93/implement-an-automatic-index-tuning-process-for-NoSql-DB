@@ -10,31 +10,22 @@ db = client["movielens_dataset"]
 # Get the collection
 collection = db["movies"]
 #collection = db["system.indexes"]
-movie_id = 1
+movie_id = 1  #1.7248797416687012
 # find max tag count for movieid
 pipeline = [
-
-        {
-            "$match": {
-                "movieId": { "$gt": 800 }
-            }
-        },
-        {
-            "$group": {
-                "_id": "$movieID",
-                "ratingCount": {"$sum": {"$size": "$ratings"}},
-                "movieId": {"$first": "$movieId"},
-                "title": {"$first": "$title"}
-            }
-        },
-        {
-            "$project": {
-                "movieId": 1,
-                "title": 1,
-                "ratingCount": 1
-            }
+    {
+        "$match": {
+            "movieId": { "$gt": 600 }
         }
-
+    },
+    {
+        "$project": {
+            "_id":None,
+            "movieId": 1,
+            "title": 1,
+            "ratingCount": { "$size": "$ratings" }
+        }
+    }
 ]
 
 start_time = time.time()

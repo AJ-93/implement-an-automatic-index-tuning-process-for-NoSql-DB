@@ -4,12 +4,13 @@ import psutil
 
 import queries
 from queries import *
+import logging
 
 CONNECTION_STRING = "mongodb://localhost:27017"
 DATABASE = 'movielens_dataset'
 COLLECTION = 'movies'
 NUMBER_OF_INDEX_CANDIDATES = 2
-INDEX_CHANGE_THRESHOLD = 0
+INDEX_CHANGE_THRESHOLD = 6
 
 
 conn = MongoClient(CONNECTION_STRING)
@@ -53,14 +54,13 @@ for query in list_slow_queries:
         docs_returned = query['nreturned']
         index_keys_used = query['keysExamined']
         if potential_index is not None:
-            if (query_plan == 'COLLSCAN') and (potential_index not in index_list_object):
+            if (query_plan == 'COLLSCAN'):
                     for i in potential_index:
-                        print(i)
-                        if i in fields_of_collection:
+                        if (i in fields_of_collection) and (i not in index_list_object):
                             potential_ind_dict = {'index': i, 'millis': query['millis']}
                             potential_ind_dict_list.append(potential_ind_dict)
 
-print(potential_ind_dict_list)
+logging.info("potential index list with query timings",potential_ind_dict_list)
 #sorting the index list by the time taken to execute the query in descending order
 sorted_potential_ind_dict_list = sorted(potential_ind_dict_list, key=lambda k:k['millis'], reverse=True)
 #Get the top 3 popular index candidate in the list
@@ -123,10 +123,10 @@ if total_number_indexes >= INDEX_POOL and len(final_index_list) != 0 :
                     profit_tags = queries.query_tags()
                     total_profit = float(profit_tags) + float(opcount_dict['tags'])
                     final_profit_list['tags'] = total_profit
-            print(final_profit_list)
+            logging.info(f"Profit of the existing Indexes:{final_profit_list}")
             for i in range(len(final_index_list)):
                 collection.create_index([(final_index_list[i],1)])
-                print(f"potential index created for profit check: {final_index_list[i]}")
+                logging.info(f"potential index created for profit check: {final_index_list[i]}")
 
             potential_index_profit_list = {}
 
@@ -147,6 +147,7 @@ if total_number_indexes >= INDEX_POOL and len(final_index_list) != 0 :
                     profit_tags = queries.query_tags()
                     potential_index_profit_list['tags'] = profit_tags
 
+            logging.info(f"Potential indexes with profit:{potential_index_profit_list}")
             #take the potential index with the highest profit
             max_profit_potential_index = max(potential_index_profit_list, key=potential_index_profit_list.get)
             max_profit = potential_index_profit_list[max_profit_potential_index]
@@ -164,7 +165,7 @@ if total_number_indexes >= INDEX_POOL and len(final_index_list) != 0 :
             else:
                 for i in range(len(final_index_list)):
                     collection.drop_index([(final_index_list[i], 1)])
-                    print(f"potential index removed: {final_index_list[i]}")
+                    logging.info(f"potential index removed: {final_index_list[i]}")
 
             #removing the potential index not selected
 
