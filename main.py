@@ -10,7 +10,7 @@ CONNECTION_STRING = "mongodb://localhost:27017"
 DATABASE = 'movielens_dataset'
 COLLECTION = 'movies'
 NUMBER_OF_INDEX_CANDIDATES = 2
-INDEX_CHANGE_THRESHOLD = 6
+INDEX_CHANGE_THRESHOLD = 0
 
 
 conn = MongoClient(CONNECTION_STRING)
@@ -39,7 +39,6 @@ potential_ind_dict_list = []
 indexes_list = collection.list_indexes()
 index_list_object = [index['name'].rsplit('_', 1)[0] for index in indexes_list]
 for query in list_slow_queries:
-    print(query)
     if query['op'] == 'query':
         index = query['command']['filter']
         potential_index = list(index)
@@ -53,6 +52,7 @@ for query in list_slow_queries:
         docs_scanned = query['docsExamined']
         docs_returned = query['nreturned']
         index_keys_used = query['keysExamined']
+        potential_index = list(set(potential_index))
         if potential_index is not None:
             if (query_plan == 'COLLSCAN'):
                     for i in potential_index:
@@ -60,15 +60,16 @@ for query in list_slow_queries:
                             potential_ind_dict = {'index': i, 'millis': query['millis']}
                             potential_ind_dict_list.append(potential_ind_dict)
 
-logging.info("potential index list with query timings",potential_ind_dict_list)
+print(f"potential index list with query timings {potential_ind_dict_list}")
 #sorting the index list by the time taken to execute the query in descending order
 sorted_potential_ind_dict_list = sorted(potential_ind_dict_list, key=lambda k:k['millis'], reverse=True)
-#Get the top 3 popular index candidate in the list
+#Get the top 2 popular index candidate in the list
 top_popular_index_millis_list = sorted_potential_ind_dict_list[:NUMBER_OF_INDEX_CANDIDATES]
+print(f"Top 2 index candidates based on based on urgency {top_popular_index_millis_list}")
 #get the filter values or index values from the dict
 index_list = [index['index'] for index in top_popular_index_millis_list]
 final_index_list = list(index_list)
-print(final_index_list)
+print(f"final_index_list {top_popular_index_millis_list}")
 collection_list = database.list_collections()
 indexes_list = collection.list_indexes()
 total_number_indexes = sum(1 for _ in indexes_list)
@@ -123,10 +124,10 @@ if total_number_indexes >= INDEX_POOL and len(final_index_list) != 0 :
                     profit_tags = queries.query_tags()
                     total_profit = float(profit_tags) + float(opcount_dict['tags'])
                     final_profit_list['tags'] = total_profit
-            logging.info(f"Profit of the existing Indexes:{final_profit_list}")
+            print(f"Profit of the existing Indexes:{final_profit_list}")
             for i in range(len(final_index_list)):
                 collection.create_index([(final_index_list[i],1)])
-                logging.info(f"potential index created for profit check: {final_index_list[i]}")
+                print(f"potential index created for profit check: {final_index_list[i]}")
 
             potential_index_profit_list = {}
 
@@ -147,7 +148,8 @@ if total_number_indexes >= INDEX_POOL and len(final_index_list) != 0 :
                     profit_tags = queries.query_tags()
                     potential_index_profit_list['tags'] = profit_tags
 
-            logging.info(f"Potential indexes with profit:{potential_index_profit_list}")
+            print(f"Potential indexes with profit:{potential_index_profit_list}")
+            rest_potential_index_profit_list = list(potential_index_profit_list.keys())
             #take the potential index with the highest profit
             max_profit_potential_index = max(potential_index_profit_list, key=potential_index_profit_list.get)
             max_profit = potential_index_profit_list[max_profit_potential_index]
@@ -165,11 +167,11 @@ if total_number_indexes >= INDEX_POOL and len(final_index_list) != 0 :
             else:
                 for i in range(len(final_index_list)):
                     collection.drop_index([(final_index_list[i], 1)])
-                    logging.info(f"potential index removed: {final_index_list[i]}")
+                    print(f"potential index removed: {final_index_list[i]}")
 
             #removing the potential index not selected
 
-            for element in final_index_list:
+            for element in rest_potential_index_profit_list:
                 if element != max_profit_potential_index:
                     collection.drop_index([(element,1)])
 

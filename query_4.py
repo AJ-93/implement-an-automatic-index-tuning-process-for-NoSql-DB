@@ -15,7 +15,7 @@ movie_id = 1
 pipeline = [
 {
     "$match": {
-      "ratings": {"$elemMatch": {"rating": {"$lt": 2}}}
+      "ratings": {"$elemMatch": {"rating": {"$gt":5}}}
     }
   },
   {

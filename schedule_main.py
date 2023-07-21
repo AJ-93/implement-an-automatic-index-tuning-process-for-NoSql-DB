@@ -14,7 +14,7 @@ for subdir in ['template_path'] :
 
 default_args = {
     'owner' : 'ajay',
-    'start_date' : datetime(2023,7,11),
+    'start_date' : datetime(2023,7,20),
     'email' : ['kc.ajay1993@gmail.com'],
     'email_on_failure' : True,
     'email_on_retry' : True,

@@ -13,8 +13,8 @@ collection = db["movies"]
 # Query for documents with genre = "Comedy" and rating > 3
 query = {
     "$match": {
-        "genres": "Comedy",   #
-        "ratings": {"$elemMatch": {"rating": {"$gt": 4}}}
+        "genres": "Action",
+        "ratings": {"$elemMatch": {"rating": {"$gt": 1}}}
     }
 }
 

@@ -15,7 +15,7 @@ collection = db["movies"]
 pipeline = [
     {
         "$match": {
-            "genres": "Action"
+            "genres": "Adventure"
     }
 
     },
