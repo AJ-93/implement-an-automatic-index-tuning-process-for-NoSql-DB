@@ -43,27 +43,4 @@ for i in result:
      print(i)
 execution_time = time.time() - start_time
 
-print(execution_time)
-
-# start_time = time.time()
-#result = collection.find({"tags": {"$elemMatch": {"tag": {"$eq": "bizarre"}}}}).hint([("tags", 1)])
-# execution_time_without_index = time.time() - start_time
-# # print(execution_time_without_index)
-# print(execution_time_without_index)
-# unique_genres = db.movies.distinct("genres")
-# random.shuffle(unique_genres)
-# random_genres = random.choice(unique_genres)
-# print(type(random_genres))
-# query_without_index = {"genres": random_genres}
-# print(type(query_without_index))
-# result_without_index = collection.find(query_without_index).hint([("$natural", 1)])
-# for doc in result_without_index:
-#     print(doc)
-# pipeline = [
-#     {"$indexStats": {}}
-# ]
-# result = list(collection.aggregate(pipeline))
-# opcount_dict = {}
-# for index in result:
-#     index_name = index['name'].rsplit('_', 1)[0]
-#     print(index_name)
+print(f"Total execution time {execution_time}")

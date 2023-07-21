@@ -2,10 +2,14 @@ from pymongo import MongoClient
 import random
 import time
 
+#Code to find the Profit of the indexes
+
 CONNECTION_STRING = "mongodb://localhost:27017"
 conn = MongoClient(CONNECTION_STRING)
 db = conn["movielens_dataset"]
 collection = db["movies"]
+
+
 def query_movieId():
     movieid_list = [i for i in range(1, 10681)]
     random.shuffle(movieid_list)

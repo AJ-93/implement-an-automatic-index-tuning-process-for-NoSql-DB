@@ -50,27 +50,5 @@ print("Movie with Minimum Rating: ", min_movie, " - Rating: ", min_rating, "in t
 print("Movie with Maximum Rating: ", max_movie, " - Rating: ", max_rating, "in the Genre of", genre )
 execution_time = time.time() - start_time
 
-print(execution_time)
+print(f"Total execution time {execution_time}")
 
-# indexes = collection.list_indexes()
-# print(indexes)
-#
-# total_indexes = sum(1 for _ in indexes)
-# print(total_indexes)
-
-# unique_tags = db.movies.distinct("title")
-# movieid_list = [i for i in range(1, 10681)]
-# random.shuffle(movieid_list)
-# random_movieid = random.choice(movieid_list)
-#
-# print(type(unique_tags[random_movieid]))
-#
-# document = collection.find_one()
-# fields_of_collection = list(document.keys())
-# print(fields_of_collection)
-# pipeline = [
-#     {"$indexStats": {}}
-# ]
-# result = list(collection.aggregate(pipeline))
-
-print(result)
