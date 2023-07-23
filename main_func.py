@@ -177,15 +177,3 @@ print(f"Top 2 index candidates based on based on urgency {top_popular_index_mill
 
 create_indexes(final_index_list,total_number_indexes)
 
-
-
-
-
-
-
-
-
-
-
-
-
