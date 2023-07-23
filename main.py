@@ -6,7 +6,7 @@ CONNECTION_STRING = "mongodb://localhost:27017"
 DATABASE = 'movielens_dataset'
 COLLECTION = 'movies'
 NUMBER_OF_INDEX_CANDIDATES = 2
-INDEX_CHANGE_THRESHOLD = 0
+MIN_THRESHOLD = 0
 filter = {
     "$or": [
         {"op": "command"},
@@ -149,7 +149,7 @@ def create_indexes(final_index_list,total_number_indexes):
         sum_profit_new = sum(final_profit_list.values()) + max_profit
         print(f"New profit: {sum_profit_new}")
         # compare with threshold to check if index change is required
-        if ((sum_profit_new - sum_profit_old) > INDEX_CHANGE_THRESHOLD):
+        if ((sum_profit_new - sum_profit_old) > MIN_THRESHOLD):
             min_profit_index = min(final_profit_list, key=final_profit_list.get)
             collection.drop_index([(min_profit_index, 1)])
             collection.create_index([(max_profit_potential_index, 1)])
